@@ -25,5 +25,11 @@ service cloud.firestore {
     match /preset_kits/{kitId} {
       allow read, write: if true;
     }
+
+    // System connectivity and heartbeat
+    match /system/{systemDoc} {
+      allow read, write: if true;
+    }
   }
 }
+

@@ -35,10 +35,16 @@ export const db: Firestore = getFirestore(
 // Connection verification
 export async function testFirestoreConnection(): Promise<boolean> {
   try {
-    await getDocFromServer(doc(db, 'system', 'connection_test'));
-    return true;
-  } catch (error) {
-    console.warn('Firestore initial probe:', error);
+    const probePromise = getDocFromServer(doc(db, 'system', 'connection_test'));
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000));
+    const result = await Promise.race([probePromise, timeoutPromise]);
+    return result !== null;
+  } catch (error: any) {
+    // Graceful fallback for offline mode or network initialization
+    if (error?.code === 'unavailable' || error?.message?.includes('offline')) {
+      return false;
+    }
     return false;
   }
 }
+
