@@ -21,7 +21,7 @@ export interface ReceiptSettings {
 export const DEFAULT_RECEIPT_SETTINGS: ReceiptSettings = {
   paperWidth: '80mm',
   storeHeaderTitle: 'HENZ HEALTH CARE PRODUCTS TRADING',
-  storeSubheader: 'Medical Supplies • Clinical Kits • Hospital Essentials',
+  storeSubheader: 'Medical Supplies • Chemical & Reagents • Consumables • Lab Equipment & Glassware',
   showTin: true,
   tinNumber: '298-410-912-000 Non-VAT Reg.',
   showFdaLto: true,
@@ -29,7 +29,7 @@ export const DEFAULT_RECEIPT_SETTINGS: ReceiptSettings = {
   showCashierName: true,
   showBarcode: true,
   showQrCode: true,
-  customFooterNote: 'Thank you for choosing HENZ Healthcare Trading! Serving Iloilo medical & nursing professionals since 2018.',
+  customFooterNote: 'Thank you for choosing HENZ Healthcare Products Trading! Facebook: fb.com/profile.php?id=100054474294473 | Hotline: +63 917 302 1995',
   returnPolicyNote: 'RETURN POLICY: Sterile goods & surgical blades non-refundable once seal is broken. Replacement within 7 days with this slip.',
   enableSoundOnPrint: true,
 };

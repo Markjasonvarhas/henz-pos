@@ -38,6 +38,7 @@ import {
   HeartPulse,
   PackageCheck,
   Clock,
+  MessageSquare,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { usePOS, BRANCH_MAIN, BRANCH_USA } from '../../context/POSContext';
@@ -98,6 +99,11 @@ export const DigitalChecklistPortal: React.FC = () => {
 
   const categories = [
     'All',
+    'Chemical & Reagents',
+    'Consumables & Accessories',
+    'Laboratory Equipment & Glasswares',
+    'Medical Footwear & Apparel',
+    'Student Clinical Kits',
     'PPE & Infection Control',
     'Diagnostic & Monitoring',
     'Syringes & Needles',
@@ -105,7 +111,6 @@ export const DigitalChecklistPortal: React.FC = () => {
     'Surgical Instruments',
     'Sterilization & Antiseptics',
     'IV Therapy & Fluids',
-    'Student Clinical Kits',
     'Hospital & Clinic Supplies',
   ];
 
@@ -356,6 +361,59 @@ export const DigitalChecklistPortal: React.FC = () => {
               </span>
             )}
           </button>
+        </div>
+      </div>
+
+      {/* Facebook Verified Store & Sunday Hours Banner */}
+      <div className="bg-[#161b22] border border-blue-500/30 rounded-2xl p-4 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shrink-0 mt-0.5">
+            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            </svg>
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                HENZ Health Care Products Trading
+                <span className="inline-flex items-center text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.2 rounded-full border border-blue-500/30 font-medium">
+                  ✓ Verified Facebook Store
+                </span>
+              </span>
+              <span className="text-[11px] text-amber-300 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/30">
+                ⭐ Open Every Sunday: 9:00 AM – 6:00 PM
+              </span>
+            </div>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              Your trusted partner for Medical Supplies • Chemical & Reagents • Consumables & Accessories • Laboratory Equipment & Glasswares • Medical Footwear. Affordable & Student-Friendly Prices!
+            </p>
+            <p className="text-[11px] text-gray-400">
+              📍 <strong className="text-gray-200">Casa Conching Bldg., Jalandoni St., Iloilo City Proper</strong> (In front of University of San Agustin Gate 5 / USA Gym) | 📞 <strong className="text-gray-200">+63 917 302 1995</strong>
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0 w-full md:w-auto">
+          <a
+            href="https://www.facebook.com/profile.php?id=100054474294473"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md shadow-blue-950/40 cursor-pointer"
+          >
+            <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            </svg>
+            <span>Facebook Page</span>
+          </a>
+          <a
+            href="https://m.me/100054474294473"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#21262d] hover:bg-[#30363d] text-blue-300 hover:text-white border border-blue-500/30 text-xs font-bold transition cursor-pointer"
+          >
+            <MessageSquare className="w-3.5 h-3.5 text-blue-400" />
+            <span>Chat Messenger</span>
+          </a>
         </div>
       </div>
 

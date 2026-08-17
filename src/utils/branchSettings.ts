@@ -24,40 +24,44 @@ export interface StoreGeneralSettings {
   fdaLtoNumber: string;
   emergencyHotline: string;
   email: string;
+  facebookPageUrl: string;
+  facebookMessengerUrl: string;
   branches: Record<'main' | 'usa', BranchProfile>;
 }
 
 export const DEFAULT_STORE_SETTINGS: StoreGeneralSettings = {
   storeName: 'HENZ HEALTH CARE PRODUCTS TRADING',
-  tagline: 'Medical Supplies • Clinical Kits • Hospital Essentials',
-  warehouseLocation: 'Warehouse Hub: Aganan, Pavia, Iloilo City',
+  tagline: 'Your Trusted Partner for Medical Supplies • Chemical & Reagents • Consumables & Accessories • Laboratory Equipment & Glasswares • Affordable & Student-Friendly Prices',
+  warehouseLocation: 'Casa Conching Bldg., Jalandoni St., Iloilo City Proper, Iloilo City',
   tinNumber: '298-410-912-000',
   fdaLtoNumber: 'FDA-CDRRHR-LTO-2023-01984',
-  emergencyHotline: '+63 917 582 9140 / (033) 320-8451',
+  emergencyHotline: '+63 917 302 1995 / 0917-302-1995',
   email: 'orders.henzhealthcare@gmail.com',
+  facebookPageUrl: 'https://www.facebook.com/profile.php?id=100054474294473',
+  facebookMessengerUrl: 'https://m.me/100054474294473',
   branches: {
     main: {
       id: 'main',
       name: 'Main Branch - Casa Conching Bldg., Jalandoni St, Iloilo City Proper',
       shortName: 'Main Branch (Casa Conching)',
-      address: 'Ground Floor, Casa Conching Building, Jalandoni Street, Iloilo City Proper',
-      landmark: 'Near UI-PHINMA & Iloilo Doctors College route',
-      operatingHours: '7:30 AM - 6:30 PM (Mon - Sat)',
-      contactNumber: '0917-582-9140 / (033) 320-8451',
+      address: 'Ground Floor, Casa Conching Building, Jalandoni Street, Iloilo City Proper, Iloilo City',
+      landmark: 'In front of University of San Agustin Gate 5 (USA Gym) • Near UI-PHINMA route',
+      operatingHours: 'Mon - Fri: 6:30 AM - 6:30 PM | Sat: 7:30 AM - 6:00 PM | Sun: 9:00 AM - 6:00 PM',
+      contactNumber: '+63 917 302 1995 / 0917-302-1995',
       managerName: 'Grace A. (Branch Supervisor)',
-      pickupInstructions: 'Proceed directly to Counter 1 (Pre-Order Claim Desk) and show your reference code or mobile number.',
+      pickupInstructions: 'Proceed to Counter 1 (Pre-Order Claim Desk) or show reference QR to staff. Express pickup for Augustinian & Ilonggo medical students.',
       status: 'Open',
     },
     usa: {
       id: 'usa',
       name: 'USA Branch - In front of University of San Agustin Gate 5 (USA Gym)',
       shortName: 'USA Branch (San Agustin Gate 5)',
-      address: 'Door 2, San Agustin Commercial Arcade, in front of USA Gym Gate 5, General Luna St.',
-      landmark: 'Directly facing University of San Agustin Gym Gate 5',
-      operatingHours: '7:00 AM - 7:00 PM (Mon - Sat)',
-      contactNumber: '0998-441-2093 / (033) 335-1928',
+      address: 'Door 2, Casa Conching Commercial Arcade, in front of USA Gym Gate 5, General Luna / Jalandoni St.',
+      landmark: 'Directly facing University of San Agustin Gate 5 (USA Gym)',
+      operatingHours: 'Mon - Fri: 6:30 AM - 6:30 PM | Sat: 7:30 AM - 6:00 PM | Sun: 9:00 AM - 6:00 PM',
+      contactNumber: '+63 917 302 1995 / 0998-441-2093',
       managerName: 'Arnel M. (USA Station Lead)',
-      pickupInstructions: 'Express pickup station right across Gate 5. Dedicated queue for Augustinian nursing and medtech students.',
+      pickupInstructions: 'Express pickup station right across Gate 5. Dedicated priority desk for nursing, medtech, and pharmacy students.',
       status: 'Open',
     },
   },

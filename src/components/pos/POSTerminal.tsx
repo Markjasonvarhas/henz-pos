@@ -69,6 +69,10 @@ export const POSTerminal: React.FC = () => {
 
   const categories: string[] = [
     'All',
+    'Chemical & Reagents',
+    'Consumables & Accessories',
+    'Laboratory Equipment & Glasswares',
+    'Medical Footwear & Apparel',
     'Diagnostic & Monitoring',
     'Surgical Instruments',
     'Wound Care & Dressings',

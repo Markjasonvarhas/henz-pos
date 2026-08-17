@@ -75,6 +75,11 @@ export const InventoryManagement: React.FC = () => {
 
   const categories = [
     'All',
+    'Chemical & Reagents',
+    'Consumables & Accessories',
+    'Laboratory Equipment & Glasswares',
+    'Medical Footwear & Apparel',
+    'Student Clinical Kits',
     'PPE & Infection Control',
     'Diagnostic & Monitoring',
     'Syringes & Needles',
@@ -82,7 +87,6 @@ export const InventoryManagement: React.FC = () => {
     'Surgical Instruments',
     'Sterilization & Antiseptics',
     'IV Therapy & Fluids',
-    'Student Clinical Kits',
     'Hospital & Clinic Supplies',
   ];
 

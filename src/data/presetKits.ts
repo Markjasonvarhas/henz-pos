@@ -2,6 +2,62 @@ import { PresetKit } from '../types';
 
 export const PRESET_KITS: PresetKit[] = [
   {
+    id: 'kit-henz-phlebotomy',
+    name: 'Complete Phlebotomy Kit for Medical Laboratory Science (MLS / BSMT)',
+    targetAudience: 'Medical Technology / Medical Laboratory Science Students & Phlebotomists',
+    category: 'Student Clinical Kits',
+    description: 'Featured on HENZ Facebook: Complete blood extraction bundle with EDTA, Clot & Citrate vacuum tubes, butterfly needles, multi-sample holder, tourniquet, lancets, alcohol swabs, micropore, and biohazard sharps box.',
+    discountPercentage: 12,
+    items: [
+      { productId: 'prod-068', quantity: 1 }, // Vacutainer EDTA Lavender Box 100s
+      { productId: 'prod-069', quantity: 1 }, // Vacutainer Clot Activator Red Box 100s
+      { productId: 'prod-070', quantity: 1 }, // Vacutainer Sodium Citrate Blue Box 100s
+      { productId: 'prod-072', quantity: 1 }, // Butterfly Needle Set Box 50s
+      { productId: 'prod-073', quantity: 1 }, // Multi-Sample Needles Box 100s
+      { productId: 'prod-074', quantity: 2 }, // Needle Holder Barrel
+      { productId: 'prod-051', quantity: 2 }, // Quick-Release Tourniquet
+      { productId: 'prod-075', quantity: 1 }, // Twist Lancets Box 100s
+      { productId: 'prod-044', quantity: 2 }, // Alcohol Swab Pads Box 100s
+      { productId: 'prod-022', quantity: 2 }, // Micropore Tape 1"
+      { productId: 'prod-002', quantity: 1 }, // Nitrile Exam Gloves Box 100s
+      { productId: 'prod-057', quantity: 1 }, // Sharps Container 5L
+    ],
+  },
+  {
+    id: 'kit-henz-lab-glassware',
+    name: 'Medical Laboratory Glassware & Reagent Starter Bundle',
+    targetAudience: 'MLS, Pharmacy, Biology & Clinical Chemistry Students',
+    category: 'Student Clinical Kits',
+    description: 'Complete glassware and diagnostic staining essentials: Borosilicate beakers, graduated cylinder, Erlenmeyer flask, test tube rack, inoculating loops, and Gram stain 4-bottle reagent set.',
+    discountPercentage: 10,
+    items: [
+      { productId: 'prod-080', quantity: 1 }, // Borosilicate Beaker Set (4s)
+      { productId: 'prod-081', quantity: 1 }, // Graduated Cylinder 100ml
+      { productId: 'prod-082', quantity: 1 }, // Erlenmeyer Flask 250ml
+      { productId: 'prod-084', quantity: 1 }, // Test Tube Rack 60-Hole
+      { productId: 'prod-085', quantity: 1 }, // Inoculating Loop & Needle
+      { productId: 'prod-061', quantity: 1 }, // Gram Stain 4-Bottle Kit
+      { productId: 'prod-063', quantity: 1 }, // Lugol's Iodine 500ml
+      { productId: 'prod-067', quantity: 1 }, // Distilled Water 1000ml
+    ],
+  },
+  {
+    id: 'kit-henz-footwear-protection',
+    name: 'Medical Footwear & Protective Duty Bundle',
+    targetAudience: 'Hospital Rotations, Operating Room, & Clinical Duty Interns',
+    category: 'Student Clinical Kits',
+    description: 'Facebook featured anti-slip autoclavable medical duty slip-on clogs, non-skid shoe covers, bouffant scrub caps, N95 respirator, and diagnostic penlight.',
+    discountPercentage: 10,
+    items: [
+      { productId: 'prod-086', quantity: 1 }, // Medical Anti-Slip Duty Shoes White
+      { productId: 'prod-006', quantity: 1 }, // Shoe Covers Pack 100s
+      { productId: 'prod-005', quantity: 1 }, // Bouffant Scrub Caps Pack 100s
+      { productId: 'prod-004', quantity: 1 }, // N95 Particulate Respirator Box 20s
+      { productId: 'prod-002', quantity: 1 }, // Nitrile Exam Gloves Box 100s
+      { productId: 'prod-011', quantity: 1 }, // Diagnostic Penlight
+    ],
+  },
+  {
     id: 'kit-usa-bsn',
     name: 'University of San Agustin (USA) - BSN Clinical Duty Bundle',
     targetAudience: 'University of San Agustin (USA) - College of Nursing & Health Sciences',

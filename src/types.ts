@@ -6,6 +6,10 @@ export type BranchName =
 
 export type ProductCategory =
   | 'PPE & Infection Control'
+  | 'Chemical & Reagents'
+  | 'Consumables & Accessories'
+  | 'Laboratory Equipment & Glasswares'
+  | 'Medical Footwear & Apparel'
   | 'Diagnostic & Monitoring'
   | 'Syringes & Needles'
   | 'Wound Care & Dressings'
