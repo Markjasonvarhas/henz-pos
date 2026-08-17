@@ -16,6 +16,8 @@ import { INITIAL_PREORDERS } from '../data/initialPreOrders';
 import { INITIAL_TRANSACTIONS } from '../data/initialTransactions';
 import { PRESET_KITS } from '../data/presetKits';
 import { soundEffects } from '../utils/audio';
+import { db, testFirestoreConnection } from '../lib/firebase';
+import { collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc } from 'firebase/firestore';
 
 export type UserRole = 'user' | 'admin';
 export type ActiveNavView = 'pos' | 'checklist-portal' | 'prep-queue' | 'inventory' | 'expiry' | 'reports';
@@ -318,9 +320,120 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [recentCompletedSale, setRecentCompletedSale] = useState<SaleTransaction | null>(null);
   const [activePreOrderModal, setActivePreOrderModal] = useState<CustomerPreOrder | null>(null);
 
-  // Synchronize to unified localStorage schema
+  // Firebase Cloud Firestore Real-Time Listener
+  useEffect(() => {
+    let unsubPreorders: (() => void) | null = null;
+    let unsubProducts: (() => void) | null = null;
+
+    try {
+      // 1. Live Pre-Orders Listener
+      const preOrdersRef = collection(db, 'preorders');
+      unsubPreorders = onSnapshot(
+        preOrdersRef,
+        (snapshot) => {
+          if (!snapshot.empty) {
+            const list: CustomerPreOrder[] = [];
+            snapshot.forEach((docSnap) => {
+              const data = docSnap.data() as CustomerPreOrder;
+              if (data && data.orderNumber) {
+                list.push(data);
+              }
+            });
+            if (list.length > 0) {
+              list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+              setPreOrders(list);
+            }
+          } else {
+            // Seed initial preorders to Firestore if newly provisioned
+            INITIAL_PREORDERS.forEach((po) => {
+              setDoc(doc(db, 'preorders', po.id), po).catch(() => {});
+            });
+          }
+        },
+        (error) => {
+          console.warn('Firestore real-time pre-orders offline/fallback:', error);
+        }
+      );
+
+      // 2. Test initial connectivity
+      testFirestoreConnection().catch(() => {});
+    } catch (err) {
+      console.warn('Firestore initialization notice:', err);
+    }
+
+    return () => {
+      if (unsubPreorders) unsubPreorders();
+      if (unsubProducts) unsubProducts();
+    };
+  }, []);
+
+  // BroadcastChannel and Storage listener for instant real-time synchronization across multiple tabs/windows
+  useEffect(() => {
+    let broadcastChannel: BroadcastChannel | null = null;
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        broadcastChannel = new BroadcastChannel('henz_pos_sync_channel');
+        broadcastChannel.onmessage = (event) => {
+          if (!event.data || !event.data.type) return;
+          const { type, payload } = event.data;
+          if (type === 'SYNC_PREORDERS' && Array.isArray(payload)) {
+            setPreOrders(payload);
+          } else if (type === 'SYNC_PRODUCTS' && Array.isArray(payload)) {
+            setProducts(payload);
+          } else if (type === 'SYNC_TRANSACTIONS' && Array.isArray(payload)) {
+            setTransactions(payload);
+          } else if (type === 'SYNC_TRANSFERS' && Array.isArray(payload)) {
+            setStockTransfers(payload);
+          } else if (type === 'SYNC_KITS' && Array.isArray(payload)) {
+            setPresetKits(payload);
+          }
+        };
+      }
+    } catch { /* ignore */ }
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (!e.newValue) return;
+      try {
+        if (e.key === 'henz_preorders_v3') {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setPreOrders(parsed);
+        } else if (e.key === 'henz_products_v3') {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setProducts(parsed);
+        } else if (e.key === 'henz_transactions_v3') {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setTransactions(parsed);
+        } else if (e.key === 'henz_stock_transfers_v3') {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setStockTransfers(parsed);
+        } else if (e.key === 'henz_preset_kits_v3') {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setPresetKits(parsed);
+        }
+      } catch { /* ignore */ }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      if (broadcastChannel) broadcastChannel.close();
+    };
+  }, []);
+
+  const broadcastSync = (type: string, payload: any) => {
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        const channel = new BroadcastChannel('henz_pos_sync_channel');
+        channel.postMessage({ type, payload });
+        channel.close();
+      }
+    } catch { /* ignore */ }
+  };
+
+  // Synchronize to unified localStorage schema and notify other tabs
   useEffect(() => {
     localStorage.setItem('henz_products_v3', JSON.stringify(products));
+    broadcastSync('SYNC_PRODUCTS', products);
   }, [products]);
 
   useEffect(() => {
@@ -333,18 +446,22 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     localStorage.setItem('henz_transactions_v3', JSON.stringify(transactions));
+    broadcastSync('SYNC_TRANSACTIONS', transactions);
   }, [transactions]);
 
   useEffect(() => {
     localStorage.setItem('henz_preorders_v3', JSON.stringify(preOrders));
+    broadcastSync('SYNC_PREORDERS', preOrders);
   }, [preOrders]);
 
   useEffect(() => {
     localStorage.setItem('henz_stock_transfers_v3', JSON.stringify(stockTransfers));
+    broadcastSync('SYNC_TRANSFERS', stockTransfers);
   }, [stockTransfers]);
 
   useEffect(() => {
     localStorage.setItem('henz_preset_kits_v3', JSON.stringify(presetKits));
+    broadcastSync('SYNC_KITS', presetKits);
   }, [presetKits]);
 
   // Unified Database Metadata
@@ -694,6 +811,13 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           po.id === active.sourcePreOrderId ? { ...po, orderStatus: 'Claimed' } : po
         )
       );
+      try {
+        updateDoc(doc(db, 'preorders', active.sourcePreOrderId), {
+          orderStatus: 'Claimed',
+        }).catch(() => {});
+      } catch {
+        // offline fallback
+      }
     }
 
     // Save transaction to centralized table
@@ -761,6 +885,16 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setPreOrders((prev) => [newOrder, ...prev]);
     soundEffects.playQRScanChime();
+
+    // Push new order to Firebase Cloud Firestore
+    try {
+      setDoc(doc(db, 'preorders', newOrder.id), newOrder).catch((err) => {
+        console.warn('Offline Firestore save:', err);
+      });
+    } catch {
+      // offline fallback
+    }
+
     return newOrder;
   };
 
@@ -777,6 +911,18 @@ export const POSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return po;
       })
     );
+
+    // Push status update to Firebase Cloud Firestore
+    try {
+      updateDoc(doc(db, 'preorders', orderId), {
+        orderStatus: status,
+        ...(packedItemIds ? { packedItemIds } : {}),
+      }).catch((err) => {
+        console.warn('Offline Firestore status update:', err);
+      });
+    } catch {
+      // offline fallback
+    }
   };
 
   // Stock Transfer between Main Branch (Casa Conching) & USA Branch (Gate 5) with Central Ledger

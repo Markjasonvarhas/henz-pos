@@ -14,10 +14,22 @@ import {
   CheckSquare,
   Square,
   AlertCircle,
+  Mail,
+  Send,
+  ExternalLink,
+  CheckCircle2,
 } from 'lucide-react';
 import { usePOS } from '../../context/POSContext';
 import { CustomerPreOrder, PreOrderStatus } from '../../types';
 import { QRCodeRenderer } from '../common/QRCodeRenderer';
+import {
+  sendEmailNotification,
+  openClientEmail,
+  openGmailWeb,
+  generatePickupEmailContent,
+  getEmailSettings,
+} from '../../utils/emailNotifier';
+import { soundEffects } from '../../utils/audio';
 
 export const OrderPrepQueue: React.FC = () => {
   const { preOrders, updatePreOrderStatus, loadPreOrderIntoCart, setActiveView } = usePOS();
@@ -25,11 +37,13 @@ export const OrderPrepQueue: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrderForPacking, setSelectedOrderForPacking] = useState<CustomerPreOrder | null>(null);
   const [activeQRModalOrder, setActiveQRModalOrder] = useState<CustomerPreOrder | null>(null);
+  const [emailAlertStatus, setEmailAlertStatus] = useState<{ [orderId: string]: string }>({});
 
   const filteredOrders = preOrders.filter((order) => {
     const matchesSearch =
       order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (order.email && order.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
       order.schoolOrClinic.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesBranch =
@@ -63,9 +77,55 @@ export const OrderPrepQueue: React.FC = () => {
     }
   };
 
-  const handleMarkReady = (order: CustomerPreOrder) => {
+  const handleMarkReady = async (order: CustomerPreOrder) => {
     updatePreOrderStatus(order.id, 'Ready for Pickup');
     setSelectedOrderForPacking(null);
+    soundEffects.playBeepSuccess();
+
+    // Auto-send email notification if email exists and auto-send is enabled
+    const emailSettings = getEmailSettings();
+    if (order.email && emailSettings.enabled && emailSettings.autoSendOnReady) {
+      const emailContent = generatePickupEmailContent(
+        order.orderNumber,
+        order.customerName,
+        order.pickupBranch,
+        order.totalAmount,
+        order.items
+      );
+
+      const res = await sendEmailNotification(
+        order.email,
+        order.customerName,
+        order.orderNumber,
+        emailContent.subject,
+        emailContent.body,
+        'Ready for Pickup'
+      );
+
+      setEmailAlertStatus((prev) => ({
+        ...prev,
+        [order.id]: res.success ? 'Email Alert Dispatched' : 'Email Ready',
+      }));
+    }
+  };
+
+  const handleSendEmailNotice = (order: CustomerPreOrder) => {
+    const targetEmail = order.email || '';
+    if (!targetEmail) {
+      alert('No email address was provided with this order.');
+      return;
+    }
+
+    const emailContent = generatePickupEmailContent(
+      order.orderNumber,
+      order.customerName,
+      order.pickupBranch,
+      order.totalAmount,
+      order.items
+    );
+
+    openGmailWeb(targetEmail, emailContent.subject, emailContent.body);
+    setEmailAlertStatus((prev) => ({ ...prev, [order.id]: 'Opened in Webmail' }));
   };
 
   const handleDirectPOSCheckout = (order: CustomerPreOrder) => {
@@ -288,7 +348,14 @@ export const OrderPrepQueue: React.FC = () => {
                       {order.orderNumber}
                     </span>
                     <h4 className="text-xs font-bold text-white mt-1.5">{order.customerName}</h4>
-                    <p className="text-[10px] text-gray-400">{order.contactNumber}</p>
+                    {order.email ? (
+                      <p className="text-[10px] text-teal-400 font-mono flex items-center gap-1 mt-0.5">
+                        <Mail className="w-3 h-3 text-teal-400" />
+                        <span className="truncate max-w-[140px]">{order.email}</span>
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-gray-400">{order.contactNumber}</p>
+                    )}
                   </div>
                   <button
                     onClick={() => setActiveQRModalOrder(order)}
@@ -303,6 +370,21 @@ export const OrderPrepQueue: React.FC = () => {
                   <span>{order.totalItems} items ready in bag</span>
                   <span className="font-bold font-mono">₱{order.totalAmount.toLocaleString()}</span>
                 </div>
+
+                {/* Email Alert Action Bar */}
+                {order.email && (
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => handleSendEmailNotice(order)}
+                      className="flex-1 py-1 px-2 bg-teal-950/80 hover:bg-teal-900 border border-teal-500/40 text-teal-300 rounded-lg text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1"
+                      title="Open Webmail / Gmail with ready-for-pickup notice"
+                    >
+                      <Mail className="w-3 h-3 text-teal-400" />
+                      <span>{emailAlertStatus[order.id] || 'Email Customer'}</span>
+                    </button>
+                  </div>
+                )}
 
                 <div className="flex gap-1.5">
                   <button

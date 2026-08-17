@@ -33,12 +33,19 @@ import {
   FolderPlus,
   BookmarkPlus,
   Info,
+  Stethoscope,
+  Activity,
+  HeartPulse,
+  PackageCheck,
+  Clock,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { usePOS, BRANCH_MAIN, BRANCH_USA } from '../../context/POSContext';
 import { CustomerPreOrder, BranchName, PresetKit } from '../../types';
 import { QRCodeRenderer } from '../common/QRCodeRenderer';
 import { PresetKitModal } from './PresetKitModal';
+import { OrderStatusTracker } from './OrderStatusTracker';
+import { openGmailWeb, openClientEmail } from '../../utils/emailNotifier';
 
 export const DigitalChecklistPortal: React.FC = () => {
   const {
@@ -52,7 +59,12 @@ export const DigitalChecklistPortal: React.FC = () => {
     setIsShareModalOpen,
     setIsAdminLoginModalOpen,
     isAdminAuthenticated,
+    preOrders,
   } = usePOS();
+
+  // Portal Navigation Tabs: 'order' (Build Checklist) vs 'track' (Order Status Tracker)
+  const [activePortalTab, setActivePortalTab] = useState<'order' | 'track'>('order');
+  const [trackedOrderNumber, setTrackedOrderNumber] = useState<string>('');
 
   // Form states
   const [customerName, setCustomerName] = useState('');
@@ -252,6 +264,16 @@ export const DigitalChecklistPortal: React.FC = () => {
 
     setSubmittedOrder(newOrder);
 
+    // Save to customer's private device session so they can track only their own orders
+    try {
+      const existingMyOrders: string[] = JSON.parse(localStorage.getItem('henz_my_orders_v1') || '[]');
+      if (!existingMyOrders.includes(newOrder.orderNumber)) {
+        localStorage.setItem('henz_my_orders_v1', JSON.stringify([newOrder.orderNumber, ...existingMyOrders]));
+      }
+    } catch {
+      // ignore
+    }
+
     try {
       confetti({
         particleCount: 100,
@@ -265,24 +287,24 @@ export const DigitalChecklistPortal: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6 text-[#c9d1d9]">
-      {/* Header Explaining Option 1 Research Solution */}
-      <div className="bg-gradient-to-r from-emerald-950 via-[#161b22] to-teal-950 text-white p-6 rounded-2xl shadow-lg border border-emerald-500/40 space-y-3">
+      {/* Medical Header & Portal Mode Switcher */}
+      <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-slate-900 text-white p-6 rounded-2xl shadow-xl border border-teal-500/30 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span className="p-2.5 bg-emerald-500/20 rounded-xl border border-emerald-500/30">
-              <ClipboardList className="w-6 h-6 text-emerald-400" />
+          <div className="flex items-center gap-3.5">
+            <span className="p-3 bg-teal-500/20 rounded-2xl border border-teal-500/40 text-teal-400 shadow-inner">
+              <Stethoscope className="w-6 h-6" />
             </span>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-xl font-extrabold tracking-tight text-white">
-                  Digital Student & Clinic Medical Supply Checklist
+                <h2 className="text-xl font-bold tracking-tight text-white">
+                  HENZ Clinical Supplies & Student Pre-Order Portal
                 </h2>
-                <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 px-2.5 py-0.5 rounded-full">
                   Zero Login Required
                 </span>
               </div>
-              <p className="text-xs text-emerald-300 mt-0.5">
-                Pre-order medical supplies online, get an instant QR pickup slip, and pick up in store with zero line waiting.
+              <p className="text-xs text-teal-300/90 mt-0.5">
+                Official retail portal for College of Nursing, MedTech, Pharmacy, and Hospital clinical supplies.
               </p>
             </div>
           </div>
@@ -291,33 +313,75 @@ export const DigitalChecklistPortal: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsShareModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer shadow-md shadow-emerald-950/50"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold transition cursor-pointer shadow-lg shadow-teal-950/50"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span>Share Link with Classmates</span>
+              <span>Share Portal</span>
             </button>
-            <span className="text-xs font-semibold bg-[#21262d] text-gray-300 px-3 py-1.5 rounded-xl border border-[#30363d] hidden sm:inline">
-              HENZ Trading • Iloilo
+            <span className="text-xs font-semibold bg-slate-900/90 text-slate-300 px-3 py-2 rounded-xl border border-slate-700 hidden sm:inline">
+              Casa Conching & USA Branch
             </span>
           </div>
         </div>
-      </div>
 
-      {/* Temporary Notice Toast */}
-      {noticeMessage && (
-        <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 px-4 py-2.5 rounded-xl text-xs flex items-center justify-between shadow-lg shadow-emerald-950/50 animate-in fade-in slide-in-from-top-2">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span>{noticeMessage}</span>
-          </div>
+        {/* Portal Tabs: Order Medical Supplies vs Live Order Tracker */}
+        <div className="flex items-center gap-2 pt-2 border-t border-slate-800/80">
           <button
-            onClick={() => setNoticeMessage(null)}
-            className="text-emerald-400 hover:text-white text-xs font-bold px-1"
+            type="button"
+            onClick={() => setActivePortalTab('order')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              activePortalTab === 'order'
+                ? 'bg-teal-600 text-white shadow-md shadow-teal-950/40'
+                : 'bg-slate-950/60 text-slate-400 hover:text-slate-200 border border-slate-800'
+            }`}
           >
-            ✕
+            <ClipboardList className="w-4 h-4" />
+            <span>1. Medical Supplies & Kit Checklist</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActivePortalTab('track')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+              activePortalTab === 'track'
+                ? 'bg-teal-600 text-white shadow-md shadow-teal-950/40'
+                : 'bg-slate-950/60 text-slate-400 hover:text-slate-200 border border-slate-800'
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            <span>2. Track Order Status & Notifications</span>
+            {preOrders.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-teal-400 text-slate-950">
+                {preOrders.length}
+              </span>
+            )}
           </button>
         </div>
-      )}
+      </div>
+
+      {/* Render Active Portal Tab */}
+      {activePortalTab === 'track' ? (
+        <OrderStatusTracker
+          initialOrderNumber={trackedOrderNumber}
+          onNewOrderClick={() => setActivePortalTab('order')}
+        />
+      ) : (
+        <>
+          {/* Temporary Notice Toast */}
+          {noticeMessage && (
+            <div className="bg-teal-950/90 border border-teal-500/50 text-teal-200 px-4 py-2.5 rounded-xl text-xs flex items-center justify-between shadow-lg shadow-teal-950/50 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+                <span>{noticeMessage}</span>
+              </div>
+              <button
+                onClick={() => setNoticeMessage(null)}
+                className="text-teal-400 hover:text-white text-xs font-bold px-1"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
       {/* Preset Starter Kits (1-Click Fill & Custom Management) */}
       <div className="bg-[#161b22] p-4 sm:p-5 rounded-2xl border border-[#30363d] shadow-sm space-y-3.5">
@@ -819,32 +883,34 @@ export const DigitalChecklistPortal: React.FC = () => {
             <button
               type="submit"
               disabled={selectedEntries.length === 0}
-              className={`w-full py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
+              className={`w-full py-3.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg cursor-pointer ${
                 selectedEntries.length > 0
-                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-950/40'
-                  : 'bg-[#21262d] text-gray-500 border border-[#30363d] cursor-not-allowed'
+                  ? 'bg-teal-600 hover:bg-teal-500 text-white shadow-teal-950/40'
+                  : 'bg-slate-900 text-slate-500 border border-slate-800 cursor-not-allowed'
               }`}
             >
               <QrCode className="w-4 h-4" />
-              <span>Submit Checklist & Generate QR Pickup Slip</span>
+              <span>Submit Clinical Checklist & Generate Pickup Slip</span>
             </button>
           </div>
         </div>
       </form>
+        </>
+      )}
 
       {/* Submitted Order QR Slip Modal (Option 1 Result) */}
       {submittedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 overflow-y-auto print:p-0 print:bg-white print:static">
-          <div className="bg-[#161b22] text-[#c9d1d9] w-full max-w-lg rounded-2xl shadow-2xl border border-[#30363d] overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150 print:shadow-none print:border-none print:w-full print:max-w-none">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 overflow-y-auto print:p-0 print:bg-white print:static">
+          <div className="bg-slate-900 text-slate-200 w-full max-w-lg rounded-2xl shadow-2xl border border-teal-500/40 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150 print:shadow-none print:border-none print:w-full print:max-w-none">
             {/* Header */}
-            <div className="bg-[#0d1117] text-white px-6 py-4 flex items-center justify-between border-b border-[#30363d] print:hidden">
+            <div className="bg-slate-950 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800 print:hidden">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                <h3 className="font-bold text-sm text-white">Checklist Pre-Order Confirmed!</h3>
+                <CheckCircle2 className="w-5 h-5 text-teal-400" />
+                <h3 className="font-bold text-sm text-white">Pre-Order Received & Queued!</h3>
               </div>
               <button
                 onClick={() => setSubmittedOrder(null)}
-                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-[#21262d] transition cursor-pointer"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition cursor-pointer"
               >
                 ✕
               </button>
@@ -853,14 +919,14 @@ export const DigitalChecklistPortal: React.FC = () => {
             {/* Printable Slip Content */}
             <div className="p-6 space-y-4 bg-white text-slate-800">
               <div className="text-center space-y-1">
-                <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  HENZ Health Care Student Pre-Order Slip
+                <span className="text-[10px] font-bold text-teal-900 uppercase tracking-widest bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                  HENZ Health Care Products Trading • Student Pickup Slip
                 </span>
-                <h3 className="text-xl font-mono font-extrabold text-slate-900">
+                <h3 className="text-2xl font-mono font-extrabold text-slate-950">
                   {submittedOrder.orderNumber}
                 </h3>
                 <p className="text-xs text-slate-600">
-                  Show this QR code at HENZ Store for instant 1-second pickup
+                  Present this QR code or Reference ID at the store counter for 1-second pickup
                 </p>
               </div>
 
@@ -880,20 +946,20 @@ export const DigitalChecklistPortal: React.FC = () => {
                   <span>{submittedOrder.schoolOrClinic}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Pickup Branch:</span>
-                  <span className="font-bold text-emerald-800">{submittedOrder.pickupBranch}</span>
+                  <span className="text-slate-500">Pickup Counter:</span>
+                  <span className="font-bold text-teal-800">{submittedOrder.pickupBranch}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Target Date:</span>
                   <span>{submittedOrder.targetPickupDate}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Payment Mode:</span>
+                  <span className="text-slate-500">Payment Status:</span>
                   <span className="font-semibold text-slate-800">{submittedOrder.paymentStatus}</span>
                 </div>
                 <div className="flex justify-between pt-1 border-t border-slate-200 text-sm font-bold">
                   <span className="text-slate-900">Total ({submittedOrder.totalItems} items):</span>
-                  <span className="text-emerald-800 font-mono">₱{submittedOrder.totalAmount.toLocaleString()}</span>
+                  <span className="text-teal-800 font-mono">₱{submittedOrder.totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
 
@@ -903,32 +969,51 @@ export const DigitalChecklistPortal: React.FC = () => {
                 {submittedOrder.items.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-slate-600 text-[11px]">
                     <span className="truncate pr-2">{item.quantity}x {item.productName}</span>
-                    <span className="font-mono text-slate-800 shrink-0">₱{item.quantity * item.unitPrice}</span>
+                    <span className="font-mono text-slate-800 shrink-0">₱{(item.quantity * item.unitPrice).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Modal Actions */}
-            <div className="bg-[#0d1117] px-6 py-4 border-t border-[#30363d] flex flex-wrap items-center justify-between gap-2 print:hidden">
-              <div className="flex items-center gap-2">
+            <div className="bg-slate-950 px-6 py-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 print:hidden">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="px-4 py-2 bg-[#21262d] hover:bg-[#30363d] text-gray-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-[#30363d] cursor-pointer"
+                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 cursor-pointer"
                 >
-                  <Printer className="w-4 h-4" />
-                  <span>Print QR Slip</span>
+                  <Printer className="w-4 h-4 text-teal-400" />
+                  <span>Print Slip</span>
                 </button>
+
+                {submittedOrder.email && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const subject = `[HENZ Health Care] Pre-Order Slip #${submittedOrder.orderNumber} Confirmation`;
+                      const body = `Hi ${submittedOrder.customerName},\n\nYour clinical supplies pre-order #${submittedOrder.orderNumber} has been received!\n\nPickup Branch: ${submittedOrder.pickupBranch}\nTarget Date: ${submittedOrder.targetPickupDate}\nTotal Amount: PHP ${submittedOrder.totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}\n\nPresent this email or your Order Reference Code #${submittedOrder.orderNumber} at the store counter.\n\nThank you,\nHENZ Health Care Products Trading`;
+                      openGmailWeb(submittedOrder.email!, subject, body);
+                    }}
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 cursor-pointer"
+                    title="Send / Open confirmation in Gmail"
+                  >
+                    <Mail className="w-4 h-4 text-teal-400" />
+                    <span>Email Confirmation</span>
+                  </button>
+                )}
 
                 <button
                   type="button"
-                  onClick={() => setIsShareModalOpen(true)}
-                  className="px-3 py-2 bg-[#21262d] hover:bg-[#30363d] text-emerald-400 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-[#30363d] cursor-pointer"
-                  title="Share Pre-Order Portal Link"
+                  onClick={() => {
+                    setTrackedOrderNumber(submittedOrder.orderNumber);
+                    setActivePortalTab('track');
+                    setSubmittedOrder(null);
+                  }}
+                  className="px-3.5 py-2 bg-teal-950/80 hover:bg-teal-900 text-teal-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-teal-500/40 cursor-pointer"
                 >
-                  <Share2 className="w-3.5 h-3.5" />
-                  <span>Share Link</span>
+                  <Clock className="w-3.5 h-3.5 text-teal-400" />
+                  <span>Track Status Live →</span>
                 </button>
               </div>
 
@@ -939,9 +1024,9 @@ export const DigitalChecklistPortal: React.FC = () => {
                     setSubmittedOrder(null);
                     setActiveView('prep-queue');
                   }}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-emerald-950/40"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-teal-950/40"
                 >
-                  <span>View in Store Prep Queue →</span>
+                  <span>View in Prep Desk →</span>
                 </button>
               ) : (
                 <button
@@ -954,10 +1039,10 @@ export const DigitalChecklistPortal: React.FC = () => {
                     setEmail('');
                     setNotes('');
                   }}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-emerald-950/40"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-teal-950/40"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Done / Create Another Order</span>
+                  <span>Done / Next Order</span>
                 </button>
               )}
             </div>

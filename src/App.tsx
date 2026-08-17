@@ -27,7 +27,7 @@ const MainLayout: React.FC = () => {
   } = usePOS();
 
   return (
-    <div className="min-h-screen bg-[#0a0b0d] text-[#c9d1d9] flex flex-col font-sans antialiased selection:bg-emerald-600 selection:text-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-teal-600 selection:text-white">
       {/* Top Main Navigation Header with Role Switcher */}
       <HeaderNav />
 
@@ -65,17 +65,17 @@ const MainLayout: React.FC = () => {
       <UnifiedDatabaseModal />
 
       {/* System Footer Bar */}
-      <footer className="bg-[#161b22] border-t border-[#30363d] py-3 px-4 text-center text-xs text-gray-400 print:hidden">
+      <footer className="bg-slate-900 border-t border-slate-800 py-3 px-4 text-center text-xs text-slate-400 print:hidden">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div>
-            <span className="font-bold text-white">HENZ Health Care Products Trading POS</span>
-            <span className="mx-2 text-[#30363d]">•</span>
+          <div className="flex items-center gap-2 justify-center">
+            <span className="font-bold text-white">HENZ Health Care Products Trading</span>
+            <span className="text-slate-600">•</span>
             <span>Medical Supplies & Clinical Kits Retail Management</span>
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-gray-400">
-            <span>Main Branch (Casa Conching Bldg., Jalandoni St) & USA Branch (Univ. of San Agustin Gate 5)</span>
+          <div className="flex items-center gap-3 text-[11px] text-slate-400 justify-center">
+            <span>Main Branch (Casa Conching) & USA Branch (Univ. of San Agustin Gate 5)</span>
             <span>•</span>
-            <span className="text-emerald-400 font-semibold">FDA Regulatory Compliant</span>
+            <span className="text-teal-400 font-semibold">FDA Regulatory Compliant</span>
           </div>
         </div>
       </footer>

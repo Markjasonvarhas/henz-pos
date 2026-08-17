@@ -2,12 +2,12 @@ import { PresetKit } from '../types';
 
 export const PRESET_KITS: PresetKit[] = [
   {
-    id: 'kit-bsn-1',
-    name: 'BSN 1st Year Duty Kit (Level 1 Nursing)',
-    targetAudience: 'Nursing Students (1st & 2nd Year - Fundamentals of Nursing)',
+    id: 'kit-usa-bsn',
+    name: 'University of San Agustin (USA) - BSN Clinical Duty Bundle',
+    targetAudience: 'University of San Agustin (USA) - College of Nursing & Health Sciences',
     category: 'Student Clinical Kits',
-    description: 'Complete 24-item clinical starter bundle with diagnostic tools, surgical instruments, PPE, and personal wound care kit.',
-    discountPercentage: 8,
+    description: 'Official Augustinian nursing uniform duty requirements: BP apparatus, stethoscope, penlight, surgical instruments, and duty accessories.',
+    discountPercentage: 10,
     items: [
       { productId: 'prod-007', quantity: 1 }, // Aneroid Sphygmomanometer
       { productId: 'prod-008', quantity: 1 }, // Dual Head Stethoscope
@@ -21,42 +21,129 @@ export const PRESET_KITS: PresetKit[] = [
       { productId: 'prod-033', quantity: 1 }, // Thumb Tissue Forceps
       { productId: 'prod-034', quantity: 1 }, // Needle Holder
       { productId: 'prod-035', quantity: 1 }, // Scalpel Handle #3
-      { productId: 'prod-052', quantity: 1 }, // Kidney Basin
+      { productId: 'prod-052', quantity: 1 }, // Stainless Kidney Basin
       { productId: 'prod-053', quantity: 2 }, // SS Medicine Cup
-      { productId: 'prod-060', quantity: 1 }, // Retractable Measuring Tape
-      { productId: 'prod-051', quantity: 1 }, // Tourniquet
-      { productId: 'prod-001', quantity: 1 }, // Latex Gloves Box
-      { productId: 'prod-003', quantity: 1 }, // 3-Ply Masks Box
-      { productId: 'prod-005', quantity: 1 }, // Scrub Caps Pack
+      { productId: 'prod-051', quantity: 1 }, // Tourniquet Quick-Release
+      { productId: 'prod-001', quantity: 1 }, // Latex Gloves Box (100s)
+      { productId: 'prod-003', quantity: 1 }, // 3-Ply Face Masks Box
       { productId: 'prod-022', quantity: 2 }, // Micropore Tape 1"
-      { productId: 'prod-020', quantity: 1 }, // Sterile Gauze 2x2 box
-      { productId: 'prod-019', quantity: 1 }, // Sterile Gauze 4x4 box
-      { productId: 'prod-040', quantity: 1 }, // Betadine 120ml
-      { productId: 'prod-041', quantity: 1 }, // Alcohol 500ml
-      { productId: 'prod-044', quantity: 1 }, // Alcohol Swabs
-      { productId: 'prod-025', quantity: 2 }, // Triangular Bandage
+      { productId: 'prod-019', quantity: 1 }, // Sterile Gauze 4x4
+      { productId: 'prod-041', quantity: 1 }, // 70% Isopropyl Alcohol 500ml
+      { productId: 'prod-044', quantity: 1 }, // Alcohol Prep Pads
+      { productId: 'prod-060', quantity: 1 }, // Retractable Measuring Tape
     ],
   },
   {
-    id: 'kit-iv-phlebo',
-    name: 'IV Therapy & Phlebotomy Student Pack',
-    targetAudience: 'BSN 3rd Year / MedTech Clinical Interns',
+    id: 'kit-wvsu-duty',
+    name: 'West Visayas State University (WVSU) - BSN/Medicine Clinical Kit',
+    targetAudience: 'West Visayas State University (WVSU) - College of Nursing / COM',
     category: 'Student Clinical Kits',
-    description: 'Comprehensive venipuncture and intravenous infusion practice set.',
-    discountPercentage: 5,
+    description: 'High-spec diagnostic and minor surgical skill set tailored for WVSU medical and nursing rotation standards.',
+    discountPercentage: 8,
     items: [
-      { productId: 'prod-045', quantity: 1 }, // IV Cannula 20G
-      { productId: 'prod-046', quantity: 1 }, // IV Cannula 22G
-      { productId: 'prod-047', quantity: 2 }, // IV Macro Drip Set
-      { productId: 'prod-048', quantity: 1 }, // IV Micro Drip Set
-      { productId: 'prod-049', quantity: 2 }, // 0.9% NSS 1L
-      { productId: 'prod-051', quantity: 1 }, // Tourniquet
+      { productId: 'prod-007', quantity: 1 }, // Aneroid BP Set
+      { productId: 'prod-008', quantity: 1 }, // Stethoscope
+      { productId: 'prod-009', quantity: 1 }, // Pulse Oximeter
+      { productId: 'prod-011', quantity: 1 }, // Diagnostic Penlight
+      { productId: 'prod-028', quantity: 1 }, // Mosquito Straight
+      { productId: 'prod-031', quantity: 1 }, // Bandage Scissors
+      { productId: 'prod-034', quantity: 1 }, // Needle Holder
+      { productId: 'prod-038', quantity: 2 }, // Silk Suture 3-0
+      { productId: 'prod-036', quantity: 1 }, // Scalpel Blades #10
+      { productId: 'prod-002', quantity: 1 }, // Nitrile Exam Gloves Box
+      { productId: 'prod-040', quantity: 1 }, // Povidone Iodine Betadine 120ml
+      { productId: 'prod-019', quantity: 2 }, // Gauze 4x4
       { productId: 'prod-022', quantity: 2 }, // Micropore 1"
+    ],
+  },
+  {
+    id: 'kit-idc-care',
+    name: 'Iloilo Doctors College (IDC) - Nursing & Allied Medical Starter',
+    targetAudience: 'Iloilo Doctors College (IDC) - Nursing & Allied Medical Sciences',
+    category: 'Student Clinical Kits',
+    description: 'IDC core clinical bag requirements with vital signs monitoring set, sterile dressings, and antiseptic care kit.',
+    discountPercentage: 8,
+    items: [
+      { productId: 'prod-007', quantity: 1 }, // Aneroid BP Set
+      { productId: 'prod-008', quantity: 1 }, // Stethoscope
+      { productId: 'prod-010', quantity: 1 }, // Clinical Thermometer
+      { productId: 'prod-011', quantity: 1 }, // Diagnostic Penlight
+      { productId: 'prod-028', quantity: 1 }, // Mosquito Forceps Straight
+      { productId: 'prod-031', quantity: 1 }, // Bandage Scissors
+      { productId: 'prod-051', quantity: 1 }, // Tourniquet
+      { productId: 'prod-001', quantity: 1 }, // Latex Gloves Box
+      { productId: 'prod-003', quantity: 1 }, // 3-Ply Face Mask Box
+      { productId: 'prod-022', quantity: 2 }, // Micropore 1"
+      { productId: 'prod-025', quantity: 2 }, // Triangular Bandages
+      { productId: 'prod-041', quantity: 1 }, // Alcohol 500ml
+      { productId: 'prod-052', quantity: 1 }, // Kidney Basin
+    ],
+  },
+  {
+    id: 'kit-cpu-medtech',
+    name: 'Central Philippine University (CPU) - BSN & MedTech Phlebotomy Pack',
+    targetAudience: 'Central Philippine University (CPU) - College of Nursing & MedLab Science',
+    category: 'Student Clinical Kits',
+    description: 'Comprehensive blood extraction, IV cannulation, and patient assessment kit for Centralian health sciences.',
+    discountPercentage: 7,
+    items: [
+      { productId: 'prod-045', quantity: 2 }, // IV Cannula 20G
+      { productId: 'prod-046', quantity: 2 }, // IV Cannula 22G
+      { productId: 'prod-047', quantity: 2 }, // IV Macro Drip Set
+      { productId: 'prod-049', quantity: 2 }, // 0.9% NSS 1 Liter
+      { productId: 'prod-051', quantity: 2 }, // Tourniquet
       { productId: 'prod-044', quantity: 2 }, // Alcohol Swab box
       { productId: 'prod-013', quantity: 1 }, // 1cc Syringe box
       { productId: 'prod-014', quantity: 1 }, // 3cc Syringe box
       { productId: 'prod-015', quantity: 1 }, // 5cc Syringe box
       { productId: 'prod-002', quantity: 1 }, // Nitrile Gloves box
+      { productId: 'prod-022', quantity: 2 }, // Micropore 1"
+      { productId: 'prod-057', quantity: 1 }, // Sharps Container
+    ],
+  },
+  {
+    id: 'kit-ui-phinma',
+    name: 'PHINMA University of Iloilo (UI) - Clinical & EMT First Responder Kit',
+    targetAudience: 'PHINMA University of Iloilo (UI) - College of Allied Health / Criminology',
+    category: 'Student Clinical Kits',
+    description: 'Emergency response, immobilization, vital signs, and wound triage kit tailored for UI students.',
+    discountPercentage: 9,
+    items: [
+      { productId: 'prod-007', quantity: 1 }, // Aneroid BP
+      { productId: 'prod-008', quantity: 1 }, // Stethoscope
+      { productId: 'prod-009', quantity: 1 }, // Pulse Oximeter
+      { productId: 'prod-011', quantity: 1 }, // Penlight
+      { productId: 'prod-024', quantity: 3 }, // Elastic Bandages 4"
+      { productId: 'prod-025', quantity: 4 }, // Triangular Bandages
+      { productId: 'prod-019', quantity: 2 }, // Gauze 4x4
+      { productId: 'prod-021', quantity: 2 }, // Gauze Roll 4"
+      { productId: 'prod-031', quantity: 1 }, // Bandage Scissors
+      { productId: 'prod-041', quantity: 2 }, // Alcohol 500ml
+      { productId: 'prod-040', quantity: 1 }, // Betadine 120ml
+      { productId: 'prod-001', quantity: 1 }, // Latex Gloves Box
+    ],
+  },
+  {
+    id: 'kit-spui-nursing',
+    name: 'St. Paul University Iloilo (SPUI) - Paulinian Holistic Nursing Bundle',
+    targetAudience: 'St. Paul University Iloilo (SPUI) - College of Nursing',
+    category: 'Student Clinical Kits',
+    description: 'Complete bedside patient care, clinical assessment, and infection control supply package for SPUI nursing duties.',
+    discountPercentage: 10,
+    items: [
+      { productId: 'prod-007', quantity: 1 }, // Aneroid BP
+      { productId: 'prod-008', quantity: 1 }, // Stethoscope
+      { productId: 'prod-010', quantity: 1 }, // Thermometer
+      { productId: 'prod-011', quantity: 1 }, // Diagnostic Penlight
+      { productId: 'prod-028', quantity: 1 }, // Mosquito Forceps
+      { productId: 'prod-031', quantity: 1 }, // Bandage Scissors
+      { productId: 'prod-052', quantity: 1 }, // Stainless Kidney Basin
+      { productId: 'prod-053', quantity: 2 }, // Medicine Cups
+      { productId: 'prod-051', quantity: 1 }, // Tourniquet
+      { productId: 'prod-001', quantity: 1 }, // Latex Gloves Box
+      { productId: 'prod-003', quantity: 1 }, // Face Mask Box
+      { productId: 'prod-022', quantity: 2 }, // Micropore 1"
+      { productId: 'prod-041', quantity: 1 }, // 70% Alcohol 500ml
     ],
   },
   {
